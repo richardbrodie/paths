@@ -86,15 +86,25 @@ impl Graph {
         simd_json::serde::to_writer(writer, &g).unwrap()
     }
 
-    pub fn weight(&self, n1: usize, n2: usize) -> Option<&f64> {
+    /// returns the weight/length of an edge between two given node ids, or None if no edge exists
+    pub fn weight(&self, n1: usize, n2: usize) -> Option<f64> {
         self.edges
             .iter()
             .find(|e| (e.a == n1 && e.b == n2) || (e.b == n1 && e.a == n2))
-            .map(|e| &e.weight)
+            .map(|e| e.weight)
     }
 
+    /// returns a Node (useful if its coordinates need to be seen)
     pub fn node(&self, id: usize) -> Option<&Node> {
         self.nodes.iter().find(|n| n.id == id)
+    }
+
+    /// returns all edges connecting to a given node id
+    pub fn neighbours(&self, id: usize) -> Vec<&Edge> {
+        self.edges
+            .iter()
+            .filter(|e| e.a == id || e.b == id)
+            .collect()
     }
 }
 
@@ -120,4 +130,34 @@ pub fn haversine(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
         + lat1.to_radians().cos() * lat2.to_radians().cos() * (dlon / 2.0).sin().powi(2);
     let c = 2.0 * a.sqrt().asin();
     R * c
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{Graph, START};
+
+    #[test]
+    fn finds_node() {
+        let graph = Graph::load();
+
+        let result = graph.node(START).unwrap();
+        assert_eq!(result.id, START);
+    }
+
+    #[test]
+    fn finds_neighbours() {
+        let graph = Graph::load();
+
+        let result = graph.neighbours(START);
+        assert_eq!(result.len(), 2);
+    }
+
+    #[test]
+    fn finds_weight() {
+        let graph = Graph::load();
+
+        let result = graph.weight(START, 2099675083).unwrap();
+        let approx = (result - 5.326402878962706).abs() < f64::EPSILON;
+        assert!(approx);
+    }
 }
