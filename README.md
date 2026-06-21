@@ -6,6 +6,9 @@ Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty functi
 
 You can test if your code works by either running `cargo run` which calls the `route` function with real OSM map data, or `cargo test short_route` which will call it with a tiny 5-node graph. The test passes if you can return `Vec<0, 1, 2, 3>`.
 
+The small graph:
+![graph](images/graph.webp)
+
 ## basic structure
 
 `src/dijkstra.rs` is the file you will be working in, I've created a function called `route` that you should write your code in.
@@ -34,7 +37,9 @@ You can test if your code works by either running `cargo run` which calls the `r
 
 ## tips
 
-You'll want to mostly be using `graph.neighbours(node_id)` to get all the edges connecting to a given node. If you begin with `START` and call that function you'll get two edges, meaning this node connects to two other nodes. 
+The algorithm itself is very simple, the difficulty is in choosing which specific datastructures to use to track visited nodes and calculated distances.
+
+You'll want to mostly be using `graph.neighbours(node_id)` to get all the edges connecting to a given node in each iteration. If you begin with `START` and call that function you'll get two edges, meaning this node connects to two other nodes. 
 
 An Edge looks like this:
 
