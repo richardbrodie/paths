@@ -61,7 +61,7 @@ mod tests {
             },
         ];
 
-        Graph { nodes, edges }
+        Graph::new(nodes, edges)
     }
 
     #[test]

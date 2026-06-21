@@ -13,11 +13,14 @@ pub const PREPARED_PATH: &str = "data/prepared_graph.json";
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Graph {
-    pub nodes: Vec<Node>,
-    pub edges: Vec<Edge>,
+    nodes: Vec<Node>,
+    edges: Vec<Edge>,
 }
 
 impl Graph {
+    pub fn new(nodes: Vec<Node>, edges: Vec<Edge>) -> Self {
+        Self { nodes, edges }
+    }
     pub fn load() -> Self {
         if let Ok(false) = std::fs::exists(PREPARED_PATH) {
             panic!("readable graph json not found");
@@ -72,19 +75,24 @@ impl Graph {
             .filter(|n| edges.iter().any(|e| e.has_end(n.id)))
             .collect();
 
-        let g = Graph { nodes, edges };
+        let g = Graph::new(nodes, edges);
 
         let file = File::create(PREPARED_PATH).unwrap();
         let writer = BufWriter::new(file);
         simd_json::serde::to_writer(writer, &g).unwrap()
     }
 
-    /// returns the edge between two given node ids, or None if no edge exists
+    /// an iterator of this graph's nodes
+    pub fn nodes(&self) -> impl Iterator<Item = &Node> {
+        self.nodes.iter()
+    }
+
+    /// returns the Edge between two given node ids, or None if no edge exists
     pub fn edge(&self, n1: usize, n2: usize) -> Option<&Edge> {
         self.edges.iter().find(|e| e.has_end(n1) && e.has_end(n2))
     }
 
-    /// returns a Node (useful if its coordinates need to be seen)
+    /// returns a Node (useful if its coordinates need to be seen?)
     pub fn node(&self, id: usize) -> Option<&Node> {
         self.nodes.iter().find(|n| n.id == id)
     }
