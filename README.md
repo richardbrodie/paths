@@ -1,5 +1,11 @@
 # Paths homework
 
+## the homework
+
+Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty function `route(graph: &Graph, start: usize, end: usize) -> Vec<usize>` so that it returns the sequence of nodes between `start` and `end`, e.g. `Vec<start, 1, 2, ..., 99, end>`.
+
+You can test if your code works by either running `cargo run` which calls the `route` function with real OSM map data, or `cargo test short_route` which will call it with a tiny 5-node graph. The test passes if you can return `Vec<0, 1, 2, 3>`.
+
 ## basic structure
 
 `src/dijkstra.rs` is the file you will be working in, I've created a function called `route` that you should write your code in.
@@ -12,6 +18,19 @@
 `src/bin/build_graph.rs` is an executable to regenerate the graph data located at `data/prepared_graph.json`. Ignore this.
 
 `src/graph.rs` and `src/graph` is where the code I wrote to generate and prepare the graph lives. You can largely ignore this for now, unless you're curious. Feel free to edit it if you need though.
+
+## running it
+
+### tests
+
+`cargo test` runs all tests.
+`cargo test graph` or `cargo test short_route` runs specific tests.
+`cargo test --release` runs tests with release-compiled code, it executes faster but takes longer to compile.
+`cargo test -- --no-capture` allows a test to print to the console (disabled by default).
+
+`cargo run` runs the main function in `main.rs`.
+`cargo run --release` as above, faster.
+`cargo run --bin --release build_graph` runs the main function in `bin/build_graph.rs` which regenerates the graph json to `prepared_graph.json` from the raw OSM data in `small.json`.
 
 ## tips
 
