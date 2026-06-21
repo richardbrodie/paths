@@ -2,7 +2,7 @@
 
 ## the homework
 
-Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty function `route(graph: &Graph, start: usize, end: usize) -> Vec<usize>` so that it returns the sequence of nodes between `start` and `end`, e.g. `Vec<start, 1, 2, ..., 99, end>`.
+Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty function `route(graph: &Graph, start: usize, end: usize) -> Some(Vec<usize>)` so that it returns the sequence of nodes between `start` and `end`, e.g. `Vec<start, 1, 2, ..., 99, end>`.
 
 You can test if your code works by either running `cargo run` which calls the `route` function with real OSM map data, or `cargo test short_route` which will call it with a tiny 5-node graph. The test passes if you can return `Vec<0, 1, 2, 3>`.
 
@@ -45,8 +45,7 @@ An Edge looks like this:
 
 ```rust
 Edge {
-    a: 9441935581,
-    b: 2099675083,
+    ends: [9441935581, 2099675083],
     weight: 5.326402878962706,
 }
 ```
