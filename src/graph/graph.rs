@@ -62,8 +62,7 @@ impl Graph {
                         let weight = haversine(this.lat, this.lon, next.lat, next.lon);
 
                         let edge = Edge {
-                            a: this.id,
-                            b: next.id,
+                            ends: [this.id, next.id],
                             weight,
                         };
                         edges.push(edge);
@@ -76,7 +75,7 @@ impl Graph {
         // thirdly remove all the nodes that aren't part of an edge
         let nodes = nodes
             .into_iter()
-            .filter(|n| edges.iter().any(|e| e.a == n.id || e.b == n.id))
+            .filter(|n| edges.iter().any(|e| e.has_end(n.id)))
             .collect();
 
         let g = Graph { nodes, edges };
@@ -86,12 +85,9 @@ impl Graph {
         simd_json::serde::to_writer(writer, &g).unwrap()
     }
 
-    /// returns the weight/length of an edge between two given node ids, or None if no edge exists
-    pub fn weight(&self, n1: usize, n2: usize) -> Option<f64> {
-        self.edges
-            .iter()
-            .find(|e| (e.a == n1 && e.b == n2) || (e.b == n1 && e.a == n2))
-            .map(|e| e.weight)
+    /// returns the edge between two given node ids, or None if no edge exists
+    pub fn edge(&self, n1: usize, n2: usize) -> Option<&Edge> {
+        self.edges.iter().find(|e| e.has_end(n1) && e.has_end(n2))
     }
 
     /// returns a Node (useful if its coordinates need to be seen)
@@ -103,7 +99,7 @@ impl Graph {
     pub fn neighbours(&self, id: usize) -> Vec<&Edge> {
         self.edges
             .iter()
-            .filter(|e| e.a == id || e.b == id)
+            .filter(|e| e.ends[0] == id || e.ends[1] == id)
             .collect()
     }
 }
@@ -117,9 +113,22 @@ pub struct Node {
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Edge {
-    pub a: usize,
-    pub b: usize,
+    pub ends: [usize; 2],
     pub weight: f64,
+}
+impl Edge {
+    fn has_end(&self, e: usize) -> bool {
+        self.ends[0] == e || self.ends[1] == e
+    }
+    fn other_end(&self, e: usize) -> Option<usize> {
+        if self.ends[0] == e {
+            Some(self.ends[1])
+        } else if self.ends[1] == e {
+            Some(self.ends[0])
+        } else {
+            None
+        }
+    }
 }
 
 pub fn haversine(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
@@ -134,11 +143,13 @@ pub fn haversine(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Graph, START};
+    use crate::tests::test_graph;
+
+    const START: usize = 0;
 
     #[test]
     fn finds_node() {
-        let graph = Graph::load();
+        let graph = test_graph();
 
         let result = graph.node(START).unwrap();
         assert_eq!(result.id, START);
@@ -146,18 +157,29 @@ mod tests {
 
     #[test]
     fn finds_neighbours() {
-        let graph = Graph::load();
+        let graph = test_graph();
 
         let result = graph.neighbours(START);
         assert_eq!(result.len(), 2);
     }
 
     #[test]
-    fn finds_weight() {
-        let graph = Graph::load();
+    fn finds_edge() {
+        let graph = test_graph();
+        let end = 1;
+        let weight = 4.0;
 
-        let result = graph.weight(START, 2099675083).unwrap();
-        let approx = (result - 5.326402878962706).abs() < f64::EPSILON;
+        let result = graph.edge(START, end).unwrap();
+        let approx = (result.weight - weight).abs() < f64::EPSILON;
         assert!(approx);
+    }
+
+    #[test]
+    fn finds_other_end() {
+        let graph = test_graph();
+        let end = 1;
+
+        let result = graph.edge(START, end).unwrap();
+        assert_eq!(result.other_end(START), Some(end));
     }
 }
