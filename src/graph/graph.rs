@@ -117,10 +117,10 @@ pub struct Edge {
     pub weight: f64,
 }
 impl Edge {
-    fn has_end(&self, e: usize) -> bool {
+    pub fn has_end(&self, e: usize) -> bool {
         self.ends[0] == e || self.ends[1] == e
     }
-    fn other_end(&self, e: usize) -> Option<usize> {
+    pub fn other_end(&self, e: usize) -> Option<usize> {
         if self.ends[0] == e {
             Some(self.ends[1])
         } else if self.ends[1] == e {
