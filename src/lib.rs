@@ -76,15 +76,15 @@ mod tests {
         assert_eq!(result, path);
     }
 
-    // #[test]
-    // fn long_route() {
-    //     let graph = Graph::load();
-    //     let start = crate::START;
-    //     let end = crate::END;
-    //     let path_length = 25; // I have literally no idea
-    //
-    //     let result = route(&graph, start, end).unwrap();
-    //
-    //     assert_eq!(result.len(), path_length);
-    // }
+    #[test]
+    fn long_route() {
+        let graph = Graph::load();
+        let start = crate::START;
+        let end = crate::END;
+        let path_length = 59;
+
+        let result = route(&graph, start, end).unwrap();
+
+        assert_eq!(result.len(), path_length);
+    }
 }
