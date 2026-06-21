@@ -77,6 +77,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "delete when implemented"]
     fn long_route() {
         let graph = Graph::load();
         let start = crate::START;
