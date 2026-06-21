@@ -1,4 +1,4 @@
-mod graph;
+mod inner;
 mod osm;
 
-pub use graph::{Edge, Graph, Node};
+pub use inner::{Edge, Graph, Node};

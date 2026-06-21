@@ -34,41 +34,35 @@ impl Graph {
 
         // first extract all the nodes
         for elem in raw.elements.iter() {
-            match elem.r#type.as_ref() {
-                "node" => {
-                    // make a node object
-                    let node = Node {
-                        lat: elem.lat.unwrap(),
-                        lon: elem.lon.unwrap(),
-                        id: elem.id,
-                    };
-                    nodes.push(node);
-                }
-                _ => (),
+            if elem.r#type == "node" {
+                // make a node object
+                let node = Node {
+                    lat: elem.lat.unwrap(),
+                    lon: elem.lon.unwrap(),
+                    id: elem.id,
+                };
+                nodes.push(node);
             }
         }
 
         // secondly, extract the ways and generate edges
         for elem in raw.elements.iter() {
-            match elem.r#type.as_ref() {
-                "way" => {
-                    let way_nodes = elem.nodes.as_ref().unwrap();
-                    for n in 0..way_nodes.len() - 1 {
-                        let this_id = way_nodes[n];
-                        let this = nodes.iter().find(|w| w.id == this_id).unwrap();
-                        let next_id = way_nodes[n + 1];
-                        let next = nodes.iter().find(|w| w.id == next_id).unwrap();
+            if elem.r#type == "way" {
+                let way_nodes = elem.nodes.as_ref().unwrap();
+                for n in 0..way_nodes.len() - 1 {
+                    let this_id = way_nodes[n];
+                    let this = nodes.iter().find(|w| w.id == this_id).unwrap();
+                    let next_id = way_nodes[n + 1];
+                    let next = nodes.iter().find(|w| w.id == next_id).unwrap();
 
-                        let weight = haversine(this.lat, this.lon, next.lat, next.lon);
+                    let weight = haversine(this.lat, this.lon, next.lat, next.lon);
 
-                        let edge = Edge {
-                            ends: [this.id, next.id],
-                            weight,
-                        };
-                        edges.push(edge);
-                    }
+                    let edge = Edge {
+                        ends: [this.id, next.id],
+                        weight,
+                    };
+                    edges.push(edge);
                 }
-                _ => (),
             }
         }
 
