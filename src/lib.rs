@@ -53,7 +53,7 @@ mod tests {
             },
             Edge {
                 ends: [2, 3],
-                weight: 3.0,
+                weight: 2.0,
             },
             Edge {
                 ends: [4, 3],
