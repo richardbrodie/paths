@@ -1,4 +1,5 @@
 use std::{
+    collections::BTreeMap,
     fs::File,
     io::{BufReader, BufWriter},
 };
@@ -11,15 +12,69 @@ pub const SMALL_RAW_PATH: &str = "data/small.json";
 pub const _BIG_RAW_PATH: &str = "data/big.json";
 pub const PREPARED_PATH: &str = "data/prepared_graph.json";
 
+// pub struct NewGraph {
+//     nodes: Vec<Node>,
+//     edges: Vec<Edge>,
+//     adj: BTreeMap<usize, Vec<Neighbour>>,
+// }
+// impl NewGraph {
+//     pub fn load() -> Self {
+//         let graph = Graph::load();
+//         Self::new(graph.nodes, graph.edges)
+//     }
+//     pub fn new(nodes: Vec<Node>, edges: Vec<Edge>) -> Self {
+//         let mut adj = BTreeMap::new();
+//         for e in edges.iter() {
+//             let [n1, n2] = e.ends;
+//             let weight = e.weight;
+//             adj.entry(n1)
+//                 .and_modify(|n| n.push(Neighbour { end: n2, weight }))
+//                 .or_insert(vec![]);
+//             adj.entry(n2)
+//                 .and_modify(|n| n.push(Neighbour { end: n1, weight }))
+//                 .or_insert(vec![]);
+//         }
+//
+//         Self { adj, nodes, edges }
+//     }
+//     fn add_node() {}
+//     fn add_edge() {}
+//
+//     /// returns all edges connecting to a given node id
+//     pub fn neighbours(&self, id: usize) -> Option<&Vec<Neighbour>> {
+//         self.adj.get(&id)
+//     }
+// }
+
+#[derive(Debug, Default)]
+pub struct Neighbour {
+    pub end: usize,
+    pub weight: f64,
+}
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Graph {
     nodes: Vec<Node>,
     edges: Vec<Edge>,
+    #[serde(skip)]
+    adj: BTreeMap<usize, Vec<Neighbour>>,
 }
-
+//
 impl Graph {
     pub fn new(nodes: Vec<Node>, edges: Vec<Edge>) -> Self {
-        Self { nodes, edges }
+        let mut adj = BTreeMap::new();
+        for e in edges.iter() {
+            let [n1, n2] = e.ends;
+            let weight = e.weight;
+            adj.entry(n1)
+                .and_modify(|n: &mut Vec<Neighbour>| n.push(Neighbour { end: n2, weight }))
+                .or_insert(vec![]);
+            adj.entry(n2)
+                .and_modify(|n| n.push(Neighbour { end: n1, weight }))
+                .or_insert(vec![]);
+        }
+
+        Self { adj, nodes, edges }
     }
     pub fn load() -> Self {
         if let Ok(false) = std::fs::exists(PREPARED_PATH) {
@@ -27,7 +82,8 @@ impl Graph {
         }
         let file = File::open(PREPARED_PATH).unwrap();
         let reader = BufReader::new(file);
-        simd_json::serde::from_reader(reader).unwrap()
+        let graph: Self = simd_json::serde::from_reader(reader).unwrap();
+        Self::new(graph.nodes, graph.edges)
     }
 
     pub fn prepare() {
@@ -98,11 +154,8 @@ impl Graph {
     }
 
     /// returns all edges connecting to a given node id
-    pub fn neighbours(&self, id: usize) -> Vec<&Edge> {
-        self.edges
-            .iter()
-            .filter(|e| e.ends[0] == id || e.ends[1] == id)
-            .collect()
+    pub fn neighbours(&self, id: usize) -> Option<&Vec<Neighbour>> {
+        self.adj.get(&id)
     }
 }
 
@@ -161,7 +214,7 @@ mod tests {
     fn finds_neighbours() {
         let graph = test_graph();
 
-        let result = graph.neighbours(START);
+        let result = graph.neighbours(START).unwrap();
         assert_eq!(result.len(), 2);
     }
 

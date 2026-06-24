@@ -1,5 +1,5 @@
-use paths::Graph;
+use paths::ExtractedOsm;
 
 fn main() {
-    Graph::prepare();
+    ExtractedOsm::prepare();
 }

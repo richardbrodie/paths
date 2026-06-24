@@ -1,15 +1,20 @@
-use paths::{END, Graph, START, route};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+use paths::{END, START, load_graph, route};
 
 fn main() {
-    println!("hello world");
-
     // initialise the graph
-    let graph = Graph::load();
+    let graph = load_graph();
 
     // call the function you will write, passing a reference to graph
-    let result = route(&graph, START, END);
-
-    // print the result
-    // we're expecting something like Some(Vec<1, 2, 3, 4>)
-    dbg!(result);
+    let start_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    let iterations = 10;
+    for _ in 0..iterations {
+        route(&graph, START, END).unwrap();
+    }
+    let end_time = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    println!(
+        "avg time for dijkstra: {}",
+        (end_time - start_time).as_millis() / iterations
+    )
 }

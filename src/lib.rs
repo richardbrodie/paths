@@ -5,13 +5,17 @@ pub const START: usize = 9441935581; // richard's house
 pub const END: usize = 287674100; // anna & aidin's house
 
 pub use dijkstra::route;
-pub use graph::{Edge, Graph, Node};
+pub use graph::{AdjacentList, Edge, ExtractedOsm, Graph, Node, load_graph};
 
 #[cfg(test)]
 mod tests {
-    use crate::{Edge, Graph, Node, dijkstra::route};
+    use crate::{
+        Edge, Graph, Node,
+        dijkstra::route,
+        graph::{AdjacentList, load_graph},
+    };
 
-    pub fn test_graph() -> Graph {
+    pub fn test_graph() -> impl Graph {
         let nodes = vec![
             Node {
                 id: 0,
@@ -61,7 +65,7 @@ mod tests {
             },
         ];
 
-        Graph::new(nodes, edges)
+        AdjacentList::new(nodes, edges)
     }
 
     #[test]
@@ -79,7 +83,7 @@ mod tests {
     #[test]
     #[ignore = "delete when implemented"]
     fn long_route() {
-        let graph = Graph::load();
+        let graph = load_graph();
         let start = crate::START;
         let end = crate::END;
         let path_length = 59;
