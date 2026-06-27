@@ -2,11 +2,13 @@
 
 ## the homework
 
-Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty function `route(graph: &Graph, start: usize, end: usize) -> Option<Vec<usize>>` so that it returns the sequence of nodes between `start` and `end`, e.g. `Vec<start, 1, 2, ..., 99, end>`.
+Implement dijkstra's algorithm in the file `src/dijkstra.rs` in the empty function `route<G>(graph: &G, start: usize, end: usize) -> Option<Vec<usize>>` so that it returns the sequence of nodes between `start` and `end`, e.g. `Vec<start, 1, 2, ..., 99, end>`.
 
-You can test if your code works by either running `cargo test short_route` which will call it with a tiny 5-node graph (**the better way to test your code**) or via `cargo run` which calls the `route` function with real OSM map data, which will be slower. The test passes if your code can return `Some(Vec<0, 1, 2, 3>)`.
+You can test if your code works by either running `cargo run` which runs unoptimised code but compiles quickly, or `cargo test short_route` which will pass if your code can return `Some(Vec<0, 1, 2, 3>)`. Both will use the tiny 5-node graph in the image here.
 
-Specifically, run `cargo test short_route -- --no-capture` which will allow the test to print things to the console, in case you like to do "printf debugging" using `dbg!()` of `println!()`.
+I've also included real OpenStreetMap map data - about 1 square km of roads - which you can also run your algorithm against when you're ready. It will be slower though, so it's not the default. You can run using this data by either running `cargo run -- long` (note the space between `--` and `long`) or `cargo test long_route` (you'll have to delete the `#[ignore]` line in the test first).
+
+A tip: in rust tests hide any console output by default so if you like "printf debugging" using `dbg!()` of `println!()` then run `cargo test short_route -- --no-capture` to allow the test to print things to the console.
 
 The small graph:
 ![graph](images/graph.webp)
@@ -46,9 +48,9 @@ The small graph:
 
 ## tips
 
-Use `dbg!(x)` to print what `x` is, useful for debugging. Or `println!("{:?}", x)` to format a string containing x. Don't forget the `!`...
+Use `dbg!(x)` to print what `x` is, useful for debugging. Or `println!("x is: {}", x)` to format a string containing x. Don't forget the `!`...
 
-The algorithm itself is very simple, the difficulty is in choosing which specific datastructures to use to track visited nodes and calculated distances.
+The algorithm itself is very simple, the real problem to solve is in choosing which specific datastructures to use to track visited nodes and calculated distances.
 
 You'll want to use `graph.neighbours(node_id)` to get all the edges connecting to a given node in each iteration. If you begin with `START` and call that function you'll get two edges, meaning this node connects to two other nodes. 
 
