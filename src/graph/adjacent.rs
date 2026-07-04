@@ -42,7 +42,7 @@ impl Graph for AdjacentList {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Graph, tests::test_graph};
+    use crate::{Graph, test_graph};
 
     const START: usize = 0;
     #[test]
