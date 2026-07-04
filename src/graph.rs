@@ -19,14 +19,12 @@ pub trait Graph {
     fn node_ids(&self) -> impl Iterator<Item = usize>;
 }
 
-pub fn load_graph() -> AdjacentList {
+pub fn osm_graph() -> AdjacentList {
     let start_time = SystemTime::now();
     let data = ExtractedOsm::load();
     let end_time = SystemTime::now();
-    println!(
-        "  time for json: {}",
-        end_time.duration_since(start_time).unwrap().as_millis(),
-    );
+    let duration = end_time.duration_since(start_time).unwrap().as_millis();
+    println!("load json: {}", duration,);
     AdjacentList::new(data.nodes, data.edges)
 }
 

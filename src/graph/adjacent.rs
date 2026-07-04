@@ -25,10 +25,8 @@ impl Graph for AdjacentList {
             });
         }
         let end_time = SystemTime::now();
-        println!(
-            "  time for adj: {}",
-            end_time.duration_since(start_time).unwrap().as_millis(),
-        );
+        let duration = end_time.duration_since(start_time).unwrap().as_millis();
+        println!("build graph: {}", duration,);
         Self { adj, nodes }
     }
 
